@@ -14,6 +14,8 @@
 
 import React, { useState, useMemo, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 // ============================================================================
 // THEME SYSTEM
@@ -212,8 +214,14 @@ const cmiRanges = ['All CMI','75+','60–74','45–59','30–44'];
 // ============================================================================
 const Nav = ({isDark, onToggle}: {isDark: boolean; onToggle: () => void}) => {
   const th = useContext(ThemeContext);
-  const [activeTab, setActiveTab] = useState('discover');
-  const tabs = [{id:'dashboard',l:'Dashboard'},{id:'discover',l:'Discover'},{id:'watchlist',l:'Watchlist'},{id:'alerts',l:'Alerts'},{id:'reports',l:'Reports'}];
+  const pathname = usePathname();
+  const tabs = [
+    {id:'dashboard',l:'Dashboard',href:'/dashboard'},
+    {id:'discover',l:'Discover',href:'/discover'},
+    {id:'watchlist',l:'Watchlist',href:'/watchlist'},
+    {id:'alerts',l:'Alerts',href:'/alerts'},
+    {id:'reports',l:'Reports',href:'/reports'}
+  ];
 
   return (
     <header style={{position:'sticky',top:0,zIndex:100,background:`${th.void}F2`,backdropFilter:'blur(20px)',
@@ -222,15 +230,18 @@ const Nav = ({isDark, onToggle}: {isDark: boolean; onToggle: () => void}) => {
         <ChampionsLogo height={18}/>
         <div style={{width:1,height:22,background:th.border}}/>
         <nav style={{display:'flex',gap:2,flex:1}}>
-          {tabs.map(tab=>(
-            <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{
-              fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:activeTab===tab.id?700:400,
-              letterSpacing:'0.06em',color:activeTab===tab.id?th.pulse:th.textSec,
-              background:activeTab===tab.id?th.pulseGlow:'transparent',
-              border:'none',padding:'8px 14px',borderRadius:6,cursor:'pointer',transition:'all 0.15s'}}>
-              {tab.l.toUpperCase()}
-            </button>
-          ))}
+          {tabs.map(tab=>{
+            const isActive = pathname === tab.href;
+            return (
+              <Link key={tab.id} href={tab.href} style={{
+                fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:isActive?700:400,
+                letterSpacing:'0.06em',color:isActive?th.pulse:th.textSec,
+                background:isActive?th.pulseGlow:'transparent',
+                textDecoration:'none',padding:'8px 14px',borderRadius:6,transition:'all 0.15s'}}>
+                {tab.l.toUpperCase()}
+              </Link>
+            );
+          })}
         </nav>
         <ThemeToggle isDark={isDark} onToggle={onToggle}/>
         <div style={{width:32,height:32,borderRadius:8,

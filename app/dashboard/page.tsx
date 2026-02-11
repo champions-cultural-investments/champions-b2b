@@ -9,6 +9,8 @@
 
 import React, { useState, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 // ============================================================================
 // THEME SYSTEM — Dark & Light mode with full token sets
@@ -302,13 +304,13 @@ const mockGenreTrends: GenreTrend[] = [
 // ============================================================================
 const DashboardNav = ({isDark, onToggle}: {isDark: boolean; onToggle: () => void}) => {
   const th = useContext(ThemeContext);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const pathname = usePathname();
   const tabs = [
-    {id:'dashboard',label:'Dashboard'},
-    {id:'discover',label:'Discover'},
-    {id:'watchlist',label:'Watchlist'},
-    {id:'alerts',label:'Alerts'},
-    {id:'reports',label:'Reports'},
+    {id:'dashboard',label:'Dashboard',href:'/dashboard'},
+    {id:'discover',label:'Discover',href:'/discover'},
+    {id:'watchlist',label:'Watchlist',href:'/watchlist'},
+    {id:'alerts',label:'Alerts',href:'/alerts'},
+    {id:'reports',label:'Reports',href:'/reports'},
   ];
 
   return (
@@ -327,17 +329,20 @@ const DashboardNav = ({isDark, onToggle}: {isDark: boolean; onToggle: () => void
 
         {/* Nav tabs */}
         <nav style={{display:'flex',gap:2,flex:1}}>
-          {tabs.map(tab=>(
-            <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{
-              fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:activeTab===tab.id?700:400,
-              letterSpacing:'0.06em',color:activeTab===tab.id?th.pulse:th.textSec,
-              background:activeTab===tab.id?th.pulseGlow:'transparent',
-              border:'none',padding:'8px 14px',borderRadius:6,cursor:'pointer',
-              transition:'all 0.15s',
-            }}>
-              {tab.label.toUpperCase()}
-            </button>
-          ))}
+          {tabs.map(tab=>{
+            const isActive = pathname === tab.href;
+            return (
+              <Link key={tab.id} href={tab.href} style={{
+                fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:isActive?700:400,
+                letterSpacing:'0.06em',color:isActive?th.pulse:th.textSec,
+                background:isActive?th.pulseGlow:'transparent',
+                textDecoration:'none',padding:'8px 14px',borderRadius:6,
+                transition:'all 0.15s',
+              }}>
+                {tab.label.toUpperCase()}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right actions */}
